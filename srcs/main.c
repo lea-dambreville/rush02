@@ -35,7 +35,7 @@ int	main(int argc, char **argv)
 		return (print_error("Dict Error\n"));
 	if (!(convert_number(num_str, dict)))
 	{
-		cleaning_dict(dict);
+		cleanup_dict(dict);
 		return (print_error("Dict Error\n"));
 	}
 	cleanup_dict(dict);

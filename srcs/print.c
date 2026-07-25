@@ -29,6 +29,6 @@ void	print_word(char *word, int *is_first)
 	}
 	if (!(*is_first))
 		ft_putchar(' ');
-	ft_pustr(word);
+	ft_putstr(word);
 	*is_first = 0;
 }
