@@ -3,15 +3,16 @@ CC        = cc
 CFLAGS    = -Wall -Wextra -Werror -I includes
 
 SRCS_DIR  = srcs/
-SRCS      = $(SRCS_DIR)main.c \
+SRCS      = $(SRCS_DIR)convert.c \
+            $(SRCS_DIR)ft_dict.c \
+            $(SRCS_DIR)ft_mem.c \
             $(SRCS_DIR)ft_read_line.c \
             $(SRCS_DIR)ft_string_1.c \
             $(SRCS_DIR)ft_string_2.c \
+            $(SRCS_DIR)main.c \
             $(SRCS_DIR)parse_dict.c \
             $(SRCS_DIR)parse_num.c \
-            $(SRCS_DIR)convert.c \
             $(SRCS_DIR)print.c \
-            $(SRCS_DIR)ft_utils.c
 
 OBJS      = $(SRCS:.c=.o)
 
