@@ -6,7 +6,7 @@
 /*   By: sapoolpr <sapoolpr@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/25 22:35:50 by sapoolpr          #+#    #+#             */
-/*   Updated: 2026/07/26 01:23:46 by sapoolpr         ###   ########.fr       */
+/*   Updated: 2026/07/26 02:32:58 by sapoolpr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static char	*error_read_line(char **lines_str, int *is_success)
 	return (NULL);
 }
 
-static char	*read_file(int fd, char *lines_str, int *nl_pos)
+static char	*read_until_nl(int fd, char *lines_str, int *nl_pos)
 {
 	int		byte_read;
 	char	*tmp;
@@ -65,7 +65,7 @@ static char	*read_file(int fd, char *lines_str, int *nl_pos)
 	return (lines_str);
 }
 
-static char	*get_line(char **lines_str, int pos)
+static char	*pop_line(char **lines_str, int pos)
 {
 	char	*tmp;
 	char	*line;
@@ -102,7 +102,7 @@ char	*ft_read_line(int fd, int *is_success)
 		if (!lines_str)
 			return (error_read_line(&lines_str, is_success));
 	}
-	lines_str = read_file(fd, lines_str, &nl_pos);
+	lines_str = read_until_nl(fd, lines_str, &nl_pos);
 	if (!lines_str)
 		return (error_read_line(NULL, is_success));
 	if (nl_pos == 0 && lines_str[0] == '\0')
@@ -111,7 +111,7 @@ char	*ft_read_line(int fd, int *is_success)
 		lines_str = NULL;
 		return (NULL);
 	}
-	line = get_line(&lines_str, nl_pos);
+	line = pop_line(&lines_str, nl_pos);
 	if (!line)
 		return (error_read_line(&lines_str, is_success));
 	return (line);
