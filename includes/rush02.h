@@ -4,6 +4,8 @@
 # define DEFAULT_DICT "numbers.dict"
 # define ERROR "Error\n"
 # define DICT_ERROR "Dict Error\n"
+# define SUCCESS_EXIT 0
+# define FAILURE_EXIT 1
 
 # include "ft_dict.h"
 

@@ -192,4 +192,128 @@ else
 	assert_eq "late dict failure -> ONLY \"Dict Error\", no partial words" "Dict Error" "$_out"
 fi
 
+# ============================================================
+# BONUS: "-", ",", and "and" for closer-to-correct written English.
+#
+# Convention asserted (British style, the common textbook form for reading
+# numbers aloud/in prose):
+#   - hyphen joins a tens word directly to a units word: "twenty-one", not
+#     "twenty one" (only within a single ten's remainder, 21-99 excluding
+#     the decade words themselves).
+#   - "and" precedes the final sub-100 remainder whenever ANY higher part
+#     (hundreds, thousands, millions, ...) precedes it: "one hundred and
+#     one", "one thousand and one", "one million and one". No "and" when
+#     there is no such remainder ("one hundred", "one thousand").
+#   - a comma separates each 3-digit (thousand) group in numbers with more
+#     than one such group: "one million, two hundred and thirty-four
+#     thousand, five hundred and sixty-seven".
+# These are currently unimplemented (see convert.c/print_word: words are
+# always joined by a single space) -- expected RED until the bonus is done.
+# ============================================================
+
+assert_conv "21" "twenty-one"
+assert_conv "99" "ninety-nine"
+assert_conv "101" "one hundred and one"
+assert_conv "100" "one hundred"
+assert_conv "123" "one hundred and twenty-three"
+assert_conv "1000" "one thousand"
+assert_conv "1001" "one thousand and one"
+assert_conv "1101" "one thousand, one hundred and one"
+assert_conv "1234" "one thousand, two hundred and thirty-four"
+assert_conv "1000000" "one million"
+assert_conv "1000001" "one million and one"
+assert_conv "1234567" \
+	"one million, two hundred and thirty-four thousand, five hundred and sixty-seven"
+
+# ============================================================
+# BONUS: same exercise in another language via a translated dictionary.
+#
+# numbers_th.dict (Thai) is the reference translated dictionary for this
+# bonus -- it's atomic/space-joined (see the file's own header comment for
+# why full Thai concatenation and the 10^4/10^5 scale words aren't
+# reachable through convert_number's chunk-of-3 grouping), so what IS
+# reachable must convert correctly through the exact same binary and code
+# path as English, just fed a different -I dict argument.
+# ============================================================
+
+assert_th() {
+	_n=$1; _exp=$2
+	_out=$(cd "$ROOT_DIR" && "$BIN" numbers_th.dict "$_n" 2>/dev/null)
+	_st=$?
+	if [ "$_st" -ne 0 ]; then
+		no "th convert($_n) == \"$_exp\"" "expected exit 0, got $_st" "output: [$_out]"
+		return
+	fi
+	assert_eq "th convert($_n) == \"$_exp\"" "$_exp" "$_out"
+}
+
+assert_th "0" "ศูนย์"
+assert_th "5" "ห้า"
+assert_th "20" "ยี่สิบ"
+assert_th "99" "เก้าสิบ เก้า"
+assert_th "100" "หนึ่ง ร้อย"
+assert_th "1000" "หนึ่ง พัน"
+assert_th "1000000" "หนึ่ง ล้าน"
+
+# ============================================================
+# BONUS: read numbers from stdin, one per line, when the number argument
+# is "-". Per the subject's example: `./rush-02 -` (default dict, no dict
+# arg) reads and converts each line until EOF, printing one result per
+# line; `./rush-02 <dict> -` should work the same way with an explicit
+# dict. Currently unimplemented -- main.c never special-cases "-", so it
+# gets validated as a literal number string and rejected as "Error".
+# ============================================================
+
+# assert_stdin [DICT] LINES EXPECTED_LINES -> feed LINES (already
+# newline-joined) to `./rush-02 -` (or `./rush-02 DICT -`), compare stdout
+# line-for-line against EXPECTED_LINES, require exit 0.
+assert_stdin() {
+	if [ "$#" -eq 3 ]; then
+		_dict=$1; _in=$2; _exp=$3
+	else
+		_dict=""; _in=$1; _exp=$2
+	fi
+	_stdin_file="$_WORK_DIR/stdin_input.txt"
+	printf '%s' "$_in" >"$_stdin_file"
+	if [ -n "$_dict" ]; then
+		_out=$(cd "$ROOT_DIR" && "$BIN" "$_dict" - <"$_stdin_file" 2>/dev/null)
+	else
+		_out=$(cd "$ROOT_DIR" && "$BIN" - <"$_stdin_file" 2>/dev/null)
+	fi
+	_st=$?
+	if [ "$_st" -ne 0 ]; then
+		no "stdin: [$_in] -> [$_exp]" "expected exit 0, got $_st" "output: [$_out]"
+		return
+	fi
+	assert_eq "stdin: [$_in] -> [$_exp]" "$_exp" "$_out"
+}
+
+# single number via stdin, default dict
+assert_stdin "42
+" "forty two"
+
+# the subject's own worked example: two lines, one per number, in order
+assert_stdin "42
+0
+" "forty two
+zero"
+
+# explicit dict path still works with "-" as the number arg
+assert_stdin "numbers.dict" "5
+" "five"
+
+# an invalid line among otherwise-valid ones: must not silently skip it or
+# crash the whole stream -- exact behavior (abort vs. per-line Error) is the
+# implementer's call, so this only asserts SOMETHING sane happens, not a
+# specific line-level contract; tighten once the bonus defines it.
+_stdin_bad_file="$_WORK_DIR/stdin_bad.txt"
+printf '42\nabc\n7\n' >"$_stdin_bad_file"
+_out=$(cd "$ROOT_DIR" && timeout "${RUN_TIMEOUT:-5}" "$BIN" - <"$_stdin_bad_file" 2>&1)
+_st=$?
+if [ "$_st" -eq 124 ]; then
+	no "stdin: invalid line among valid ones doesn't hang" "timed out (possible infinite loop)"
+else
+	ok "stdin: invalid line among valid ones doesn't hang (exit $_st, output: [$_out])"
+fi
+
 report

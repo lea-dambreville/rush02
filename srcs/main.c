@@ -1,5 +1,8 @@
 #include "ft_dict.h"
+#include "ft_read_line.h"
+#include "ft_string.h"
 #include "rush02.h"
+#include <stdlib.h>
 
 static int	print_error(char *msg)
 {
@@ -7,38 +10,93 @@ static int	print_error(char *msg)
 	return (1);
 }
 
-static void	cleanup_dict(t_dict_list *dict)
+// static void	cleanup_dict(t_dict_list *dict)
+// {
+// 	if (dict)
+// 		free_dict(dict);
+// }
+
+static int	assign_args(int argc, char **argv, char	**num_str, char **dict_path)
 {
-	if (dict)
-		free_dict(dict);
+	if (argc == 2)
+	{
+		*dict_path = DEFAULT_DICT;
+		*num_str = argv[1];
+		return (1);
+	}
+	else if (argc == 3)
+	{
+		*dict_path = argv[1];
+		*num_str = argv[2];
+		return (1);
+	}
+	else
+		return (0);
+}
+
+static int	validate_and_conv(char *num_str, t_dict_list *dict)
+{
+	if (!(is_valid_number(num_str)))
+	{
+		print_error(ERROR);
+		return (0);
+	}
+	if (!(convert_number(num_str, dict)))
+	{
+		print_error(DICT_ERROR);
+		return (0);
+	}
+	return (1);
+}
+
+static void	run_stdin_convert(t_dict_list *dict)
+{
+	int		is_success;
+	char	*line;
+	char	*num_str;
+
+	while (1)
+	{
+		line = ft_read_line(0, &is_success);
+		if (!line || !is_success)
+			return ;
+		if (line[0] == '\0')
+		{
+			free(line);
+			continue ;
+		}
+		num_str = trim_spaces(line, 0, ft_strlen(line));
+		if (!num_str)
+		{
+			free(line);
+			return ;
+		}
+		validate_and_conv(num_str, dict);
+		free(num_str);
+	}
 }
 
 int	main(int argc, char **argv)
 {
-	char *dict_path;
-	char *num_str;
+	char 		*dict_path;
+	char 		*num_str;
 	t_dict_list *dict;
 
-	dict_path = DEFAULT_DICT;
-	if (argc == 2)
-		num_str = argv[1];
-	else if (argc == 3)
-	{
-		dict_path = argv[1];
-		num_str = argv[2];
-	}
-	else
-		return (print_error(ERROR));
-	if (!(is_valid_number(num_str)))
+	if (!assign_args(argc, argv, &num_str, &dict_path))
 		return (print_error(ERROR));
 	dict = parse_dictionary(dict_path);
 	if (!(dict))
 		return (print_error(DICT_ERROR));
-	if (!(convert_number(num_str, dict)))
+	if (ft_strcmp(num_str, "-") == 0)
+		run_stdin_convert(dict);
+	else
 	{
-		cleanup_dict(dict);
-		return (print_error(DICT_ERROR));
+		if (!validate_and_conv(num_str, dict))
+		{
+			free_dict(dict);
+			return (FAILURE_EXIT);
+		}
 	}
-	cleanup_dict(dict);
-	return (0);
+	free_dict(dict);
+	return (SUCCESS_EXIT);
 }
