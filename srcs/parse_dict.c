@@ -1,5 +1,21 @@
 #include "rush02.h"
 
+char	*dict_lookup(t_dict_list *dict, char *key)
+{
+	int	i;
+
+	if (!dict || !dict->entries || !key)
+		return (NULL);
+	i = 0;
+	while (i < dict->size)
+	{
+		if (dict->entries[i].key && ft_strcmp(dict->entries[i].key, key) == 0)
+			return (dict->entries[i].val);
+		i++;
+	}
+	return (NULL);
+}
+
 static char	*read_file_to_buffer(char *path)
 {
 	int		fd;
@@ -17,19 +33,6 @@ static char	*read_file_to_buffer(char *path)
 	tmp[bytes] = '\0';
 	buf = ft_strdup(tmp);
 	return (buf);
-}
-
-static char	*trim_spaces(char *str, int start, int end)
-{
-	while (start < end && (str[start] == ' ' || (str[start] >= 9
-				&& str[start] <= 13)))
-		start++;
-	while (end > start && (str[end - 1] == ' ' || (str[end - 1] >= 9 && str[end
-				- 1] <= 13)))
-		end--;
-	if (start >= end)
-		return (NULL);
-	return (ft_strndup(str + start, end - start));
 }
 
 static int	parse_line(char *line, t_dict *entry)
@@ -85,10 +88,10 @@ void	free_dict(t_dict_list *dict)
 t_dict_list	*parse_dictionary(char *path)
 {
 	char		*buf;
+	char		*line;
 	t_dict_list	*dict;
 	int			i;
 	int			j;
-	char		*line;
 
 	buf = read_file_to_buffer(path);
 	if (!buf)
