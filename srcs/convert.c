@@ -1,4 +1,6 @@
 #include "rush02.h"
+#include "ft_string.h"
+#include <stdlib.h>
 
 static char	*get_magnitude_key(int scale_idx)
 {

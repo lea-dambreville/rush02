@@ -1,8 +1,10 @@
 #include "rush02.h"
-#include <fcntl.h>
 #include "ft_dict.h"
 #include "ft_string.h"
 #include "ft_read_line.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 static t_dict	parse_line(char *line)
 {

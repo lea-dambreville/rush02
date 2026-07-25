@@ -6,7 +6,7 @@
 /*   By: sapoolpr <sapoolpr@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 00:20:04 by sapoolpr          #+#    #+#             */
-/*   Updated: 2026/07/26 00:58:17 by sapoolpr         ###   ########.fr       */
+/*   Updated: 2026/07/26 03:42:21 by sapoolpr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,6 @@ int		ft_strchr(char *str, char c);
 char	*ft_strdup(char *str);
 char	*ft_strndup(char *str, int n);
 char	*ft_strnjoin(char *s1, char *s2, int n);
+char	*trim_spaces(char *str, int start, int end);
 
 #endif
