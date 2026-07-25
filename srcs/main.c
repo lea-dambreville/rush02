@@ -1,3 +1,4 @@
+#include "ft_dict.h"
 #include "rush02.h"
 
 static int	print_error(char *msg)

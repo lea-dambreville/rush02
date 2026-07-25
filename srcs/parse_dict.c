@@ -1,125 +1,124 @@
 #include "rush02.h"
+#include <fcntl.h>
+#include "ft_dict.h"
+#include "ft_string.h"
+#include "ft_read_line.h"
 
-char	*dict_lookup(t_dict_list *dict, char *key)
+static t_dict	parse_line(char *line)
 {
-	int	i;
+	t_dict	entry;
+	int		colon_idx;
+	int		len;
 
-	if (!dict || !dict->entries || !key)
-		return (NULL);
-	i = 0;
-	while (i < dict->size)
+	colon_idx = ft_strchr(line, ':');
+	if (colon_idx == -1)
 	{
-		if (dict->entries[i].key && ft_strcmp(dict->entries[i].key, key) == 0)
-			return (dict->entries[i].val);
-		i++;
+		entry.key = NULL;
+		entry.val = NULL;
 	}
-	return (NULL);
+	else
+	{
+		len = ft_strlen(line);
+		entry.key = trim_spaces(line, 0, colon_idx);
+		entry.val = trim_spaces(line, colon_idx + 1, len);
+		if (!entry.key || !entry.val)
+		{
+			free(entry.key);
+			free(entry.val);
+		}
+	}
+	return (entry);
 }
 
-static char	*read_file_to_buffer(char *path)
+static int	parse_dict_data(int fd, t_dict_list *dict)
 {
-	int		fd;
-	int		bytes;
-	char	tmp[4096];
-	char	*buf;
+	t_dict	entry;
+	char	*line;
+	int		is_success;
 
-	fd = open(path, O_RDONLY);
-	if (fd < 0)
-		return (NULL);
-	bytes = read(fd, tmp, 4095);
-	close(fd);
-	if (bytes <= 0)
-		return (NULL);
-	tmp[bytes] = '\0';
-	buf = ft_strdup(tmp);
-	return (buf);
-}
-
-static int	parse_line(char *line, t_dict *entry)
-{
-	int	colon_idx;
-	int	len;
-
-	colon_idx = 0;
-	while (line[colon_idx] && line[colon_idx] != ':')
+	while (1)
 	{
-		colon_idx++;
-	}
-	if (!line[colon_idx])
-	{
-		return (0);
-	}
-	len = ft_strlen(line);
-	entry->key = trim_spaces(line, 0, colon_idx);
-	entry->val = trim_spaces(line, colon_idx + 1, len);
-	if (!entry->key || !entry->val)
-	{
-		if (entry->key)
-			free(entry->key);
-		if (entry->val)
-			free(entry->val);
-		return (0);
+		line = ft_read_line(fd, &is_success);
+		if (!is_success)
+			return (0);
+		else if (!line)
+			break ;
+		if (line[0] == '\0')
+		{
+			free(line);
+			continue ;
+		}
+		entry = parse_line(line);
+		free(line);
+		if (entry.key == NULL || entry.val == NULL)
+			return (0);
+		if ((dict->size == dict->capacity) && !realloc_dict(dict))
+			return (0);
+		append_entry(dict, &entry);
 	}
 	return (1);
 }
 
-void	free_dict(t_dict_list *dict)
-{
-	int	i;
-
-	if (!dict)
-		return ;
-	if (dict->entries)
-	{
-		i = 0;
-		while (i < dict->size)
-		{
-			if (dict->entries[i].key)
-				free(dict->entries[i].key);
-			if (dict->entries[i].val)
-				free(dict->entries[i].val);
-			i++;
-		}
-		free(dict->entries);
-	}
-	free(dict);
-}
-
 t_dict_list	*parse_dictionary(char *path)
 {
-	char		*buf;
-	char		*line;
+	int			fd;
 	t_dict_list	*dict;
-	int			i;
-	int			j;
 
-	buf = read_file_to_buffer(path);
-	if (!buf)
-		return (NULL);
-	dict = (t_dict_list *)malloc(sizeof(t_dict_list));
+	dict = malloc(sizeof(t_dict_list) * 1);
 	if (!dict)
-	{
-		free(buf);
 		return (NULL);
-	}
-	dict->entries = (t_dict *)malloc(sizeof(t_dict) * 100);
+	dict->capacity = DEFAULT_ENTRIES_SIZE;
 	dict->size = 0;
-	i = 0;
-	while (buf[i])
+	dict->entries = malloc(sizeof(t_dict) * DEFAULT_ENTRIES_SIZE);
+	if (!dict->entries)
+		return (free_dict(dict));
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		return (free_dict(dict));
+	if (!parse_dict_data(fd, dict))
 	{
-		j = i;
-		while (buf[j] && buf[j] != '\n')
-			j++;
-		if (j > i)
-		{
-			line = ft_strndup(buf + i, j - i);
-			if (line && parse_line(line, &dict->entries[dict->size]))
-				dict->size++;
-			if (line)
-				free(line);
-		}
-		i = (buf[j] == '\n') ? j + 1 : j;
+		close(fd);
+		return (free_dict(dict));
 	}
-	free(buf);
+	close(fd);
 	return (dict);
 }
+// t_dict_list	*parse_dictionary(char *path)
+// {
+// 	char		*buf;
+// 	char		*line;
+// 	t_dict_list	*dict;
+// 	int			i;
+// 	int			j;
+
+// 	buf = read_file_to_buffer(path);
+// 	if (!buf)
+// 		return (NULL);
+// 	dict = (t_dict_list *)malloc(sizeof(t_dict_list));
+// 	if (!dict)
+// 	{
+// 		free(buf);
+// 		return (NULL);
+// 	}
+// 	dict->entries = (t_dict *)malloc(sizeof(t_dict) * 100);
+// 	dict->size = 0;
+// 	i = 0;
+// 	while (buf[i])
+// 	{
+// 		j = i;
+// 		while (buf[j] && buf[j] != '\n')
+// 			j++;
+// 		if (j > i)
+// 		{
+// 			line = ft_strndup(buf + i, j - i);
+// 			if (line && parse_line(line, &dict->entries[dict->size]))
+// 				dict->size++;
+// 			if (line)
+// 				free(line);
+// 		}
+// 		i = (buf[j] == '\n') ? j + 1 : j;
+// 	}
+// 	free(buf);
+// 	return (dict);
+// }
+//

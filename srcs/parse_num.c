@@ -1,21 +1,18 @@
-#include "rush02.h"
+#include "ft_string.h"
+#include <stdio.h>
 
 int	is_valid_number(char *str)
 {
 	int	i;
 
-	if (str == NULL || !*str)
-		return (0);
 	i = 0;
-	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
+	while (is_space(str[i]))
 		i++;
-	if (str[i] == '+')
+	while (str[i] == '+')
 		i++;
-	if (!str[i])
-		return (0);
 	while (str[i])
 	{
-		if (str[i] < '0' || str[i] > '9')
+		if (!is_number(str[i]))
 			return (0);
 		i++;
 	}
