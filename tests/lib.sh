@@ -491,6 +491,49 @@ assert_no_leaks() {
 	ok "$_name"
 }
 
+# assert_no_leaks_stdin NAME BIN STDIN_FILE [args...] -> like assert_no_leaks,
+# but stdin is fed from STDIN_FILE instead of /dev/null (for exercises that
+# read multiple records from stdin in a loop, e.g. a REPL-style "-" mode
+# where each line drives another allocate/free cycle -- a leak that only
+# happens on the 2nd+ iteration would never show up with an empty stdin).
+assert_no_leaks_stdin() {
+	_name=$1; shift
+	_bin=$1; shift
+	_stdin=$1; shift
+	if ! command -v valgrind >/dev/null 2>&1; then
+		skip "$_name" "valgrind not installed"
+		return 0
+	fi
+	_log="$_WORK_DIR/valgrind_$$_$(basename "$_bin").log"
+	_timeout=$((${RUN_TIMEOUT:-5} * 10))
+	if command -v timeout >/dev/null 2>&1; then
+		timeout "$_timeout" valgrind --leak-check=full --error-exitcode=97 \
+			--log-file="$_log" "$_bin" "$@" <"$_stdin" >/dev/null 2>&1
+	else
+		valgrind --leak-check=full --error-exitcode=97 \
+			--log-file="$_log" "$_bin" "$@" <"$_stdin" >/dev/null 2>&1
+	fi
+	_st=$?
+	if [ "$_st" -eq 124 ] || [ "$_st" -eq 137 ]; then
+		no "$_name" "timed out under valgrind (possible infinite loop)"
+		return 1
+	fi
+	_lost=$(awk '
+		/definitely lost:/ || /indirectly lost:/ {
+			for (i = 1; i <= NF; i++)
+				if ($i ~ /^[0-9,]+$/) { gsub(",", "", $i); sum += $i; break }
+		}
+		END { print sum + 0 }
+	' "$_log")
+	if [ "$_lost" -gt 0 ] || [ "$_st" -eq 97 ]; then
+		set --
+		while IFS= read -r _line; do set -- "$@" "$_line"; done <"$_log"
+		no "$_name" "$@"
+		return 1
+	fi
+	ok "$_name"
+}
+
 # --- malloc-failure injection ---
 # There's no black-box way to force a specific malloc() call to fail, so we
 # build a tiny LD_PRELOAD shim (tests/fixtures/malloc_fail_preload.c) that

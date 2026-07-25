@@ -316,4 +316,34 @@ else
 	ok "stdin: invalid line among valid ones doesn't hang (exit $_st, output: [$_out])"
 fi
 
+# --- memory: reading from stdin loops (parse the dict once, then
+# allocate/convert/free per line), so a leak that only happens on the 2nd+
+# iteration -- e.g. re-parsing the dict every line without freeing the
+# previous one, or not freeing a per-line number buffer -- needs MULTIPLE
+# lines to surface. A single-line run alone would miss that class of bug.
+# assert_no_leaks_stdin doesn't cd on its own (same contract as
+# assert_no_leaks), and rush-02's default dict path is relative to
+# ROOT_DIR, so each call below runs inside a `cd "$ROOT_DIR" && ...` subshell.
+_leak_stdin_single="$_WORK_DIR/leak_stdin_single.txt"
+printf '42\n' >"$_leak_stdin_single"
+(cd "$ROOT_DIR" && assert_no_leaks_stdin "no leaks: stdin, single line" "$BIN" "$_leak_stdin_single" -)
+
+_leak_stdin_multi="$_WORK_DIR/leak_stdin_multi.txt"
+printf '42\n0\n999\n7\n123456789\n' >"$_leak_stdin_multi"
+(cd "$ROOT_DIR" && assert_no_leaks_stdin "no leaks: stdin, multiple lines (per-iteration leak check)" \
+	"$BIN" "$_leak_stdin_multi" -)
+
+# an invalid line mid-stream must not leak whatever was partially allocated
+# for that line before validation rejected it.
+_leak_stdin_bad="$_WORK_DIR/leak_stdin_bad.txt"
+printf '42\nabc\n7\n' >"$_leak_stdin_bad"
+(cd "$ROOT_DIR" && assert_no_leaks_stdin "no leaks: stdin, invalid line mid-stream" "$BIN" "$_leak_stdin_bad" -)
+
+# explicit dict path + "-": the dict itself must still be freed exactly
+# once at the end, not once per line and not leaked.
+_leak_stdin_dict="$_WORK_DIR/leak_stdin_dict.txt"
+printf '5\n10\n100\n' >"$_leak_stdin_dict"
+(cd "$ROOT_DIR" && assert_no_leaks_stdin "no leaks: stdin with explicit dict path" \
+	"$BIN" "$_leak_stdin_dict" numbers.dict -)
+
 report
