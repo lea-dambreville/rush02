@@ -12,7 +12,7 @@
 . "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/lib.sh"
 
 MAIN="$MAINS_DIR/parse_dict_main.c"
-SRCS="$ROOT_DIR/srcs/parse_dict.c $ROOT_DIR/srcs/ft_dict.c $ROOT_DIR/srcs/ft_mem.c $ROOT_DIR/srcs/ft_read_line.c $ROOT_DIR/srcs/ft_string_1.c $ROOT_DIR/srcs/ft_string_2.c $ROOT_DIR/srcs/ft_utils.c"
+SRCS="$ROOT_DIR/srcs/parse_dict.c $ROOT_DIR/srcs/ft_dict.c $ROOT_DIR/srcs/ft_mem.c $ROOT_DIR/srcs/ft_read_line.c $ROOT_DIR/srcs/ft_string_1.c $ROOT_DIR/srcs/ft_string_2.c"
 
 STRICT_FLAGS="-Wall -Wextra -Werror -I $ROOT_DIR/includes"
 

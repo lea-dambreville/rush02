@@ -163,4 +163,33 @@ else
 	assert_eq "dict without \"hundred\" entry, input 100 -> \"Dict Error\"" "Dict Error" "$_out"
 fi
 
+# --- no partial output on a late failure: a dict that supports the FIRST
+# group convert_number reaches (the highest-order group, processed first --
+# see convert_number's scale_idx counting down from high to low) but is
+# missing what a LATER, lower-order group needs must produce ONLY
+# "Dict Error" on stdout -- nothing from the group that already succeeded
+# and printed before the failure was detected.
+# Regression for: `./rush-02 <a large number>` printing e.g.
+# "wforty wfourwthousandDict Error" (partial words from the first group,
+# glued directly onto "Dict Error" with no separator) instead of just
+# "Dict Error" -- convert_number() calls print_word() as it walks groups
+# instead of only emitting output once the whole conversion is confirmed
+# possible.
+_partial_dict="$_WORK_DIR/partial.dict"
+{
+	echo "4: wfour"
+	echo "40: wforty"
+	echo "1000: wthousand"
+} >"$_partial_dict"
+# 44100 = group0 "44" (scale 1000: needs "40"+"4", both present -> succeeds
+# and prints "wforty wfour wthousand") then group1 "100" (needs "1" and
+# "hundred", both MISSING from this dict -> fails).
+_out=$(cd "$ROOT_DIR" && "$BIN" "$_partial_dict" 44100 2>/dev/null); _st=$?
+if [ "$_st" -eq 0 ]; then
+	no "late dict failure -> ONLY \"Dict Error\", no partial words (exit 1)" \
+		"expected nonzero exit, got 0" "output: [$_out]"
+else
+	assert_eq "late dict failure -> ONLY \"Dict Error\", no partial words" "Dict Error" "$_out"
+fi
+
 report
