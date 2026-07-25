@@ -4,6 +4,9 @@ CFLAGS    = -Wall -Wextra -Werror -I includes
 
 SRCS_DIR  = srcs/
 SRCS      = $(SRCS_DIR)main.c \
+            $(SRCS_DIR)ft_read_line.c \
+            $(SRCS_DIR)ft_string_1.c \
+            $(SRCS_DIR)ft_string_2.c \
             $(SRCS_DIR)parse_dict.c \
             $(SRCS_DIR)parse_num.c \
             $(SRCS_DIR)convert.c \
