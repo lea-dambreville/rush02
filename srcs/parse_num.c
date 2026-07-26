@@ -8,7 +8,7 @@ int	is_valid_number(char *str)
 	i = 0;
 	while (is_space(str[i]))
 		i++;
-	while (str[i] == '+')
+	if (str[i] == '+')
 		i++;
 	while (str[i])
 	{

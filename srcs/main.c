@@ -37,7 +37,18 @@ static int	assign_args(int argc, char **argv, char	**num_str, char **dict_path)
 
 static int	validate_and_conv(char *num_str, t_dict_list *dict)
 {
+	char	*tmp;
+
 	if (!(is_valid_number(num_str)))
+	{
+		print_error(ERROR);
+		return (0);
+	}
+	num_str = trim_spaces(num_str, 0, ft_strlen(num_str));
+	tmp = num_str;
+	num_str = trim_leading_zeros(num_str);
+	free(tmp);
+	if (!num_str)
 	{
 		print_error(ERROR);
 		return (0);
@@ -54,7 +65,6 @@ static void	run_stdin_convert(t_dict_list *dict)
 {
 	int		is_success;
 	char	*line;
-	char	*num_str;
 
 	while (1)
 	{
@@ -69,12 +79,8 @@ static void	run_stdin_convert(t_dict_list *dict)
 			free(line);
 			continue ;
 		}
-		num_str = trim_spaces(line, 0, ft_strlen(line));
+		validate_and_conv(line, dict);
 		free(line);
-		if (!num_str)
-			return ;
-		validate_and_conv(num_str, dict);
-		free(num_str);
 	}
 }
 
