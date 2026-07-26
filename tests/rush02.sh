@@ -70,40 +70,40 @@ assert_conv "19" "nineteen"
 
 # --- tens boundary: 20 is a direct entry; 21-29 are "twenty" + unit ---
 assert_conv "20" "twenty"
-assert_conv "21" "twenty one"
-assert_conv "29" "twenty nine"
-assert_conv "99" "ninety nine"
+assert_conv "21" "twenty-one"
+assert_conv "29" "twenty-nine"
+assert_conv "99" "ninety-nine"
 
 # --- hundreds, including a teen remainder (tests hundred+teen composition,
 # not hundred + tens-digit + units-digit) ---
 assert_conv "100" "one hundred"
-assert_conv "101" "one hundred one"
-assert_conv "110" "one hundred ten"
-assert_conv "119" "one hundred nineteen"
-assert_conv "999" "nine hundred ninety nine"
+assert_conv "101" "one hundred and one"
+assert_conv "110" "one hundred and ten"
+assert_conv "119" "one hundred and nineteen"
+assert_conv "999" "nine hundred and ninety-nine"
 
 # --- thousands: exact scale word, scale + remainder, zero-group skipping ---
 assert_conv "1000" "one thousand"
-assert_conv "1001" "one thousand one"
-assert_conv "1020" "one thousand twenty"
+assert_conv "1001" "one thousand, one"
+assert_conv "1020" "one thousand, twenty"
 assert_conv "2000" "two thousand"
 assert_conv "10000" "ten thousand"
 assert_conv "100000" "one hundred thousand"
-assert_conv "100100" "one hundred thousand one hundred"
+assert_conv "100100" "one hundred thousand, one hundred"
 
 # --- million+: chunk-of-3 alignment must hold past the first scale jump ---
 assert_conv "1000000" "one million"
 assert_conv "123456789" \
-	"one hundred twenty three million four hundred fifty six thousand seven hundred eighty nine"
+	"one hundred and twenty-three million, four hundred and fifty-six thousand, seven hundred and eighty-nine"
 
 # --- middle group is zero: scale word for that group must be skipped, not
 # print a bare/duplicate magnitude word ---
-assert_conv "1000001" "one million one"
-assert_conv "2000000001" "two billion one"
+assert_conv "1000001" "one million, one"
+assert_conv "2000000001" "two billion, one"
 
 # --- INT_MAX boundary (subject scope: only 32-bit-int-representable inputs) ---
 assert_conv "2147483647" \
-	"two billion one hundred forty seven million four hundred eighty three thousand six hundred forty seven"
+	"two billion, one hundred and forty-seven million, four hundred and eighty-three thousand, six hundred and forty-seven"
 
 # --- leading zeros / leading '+' / leading whitespace: is_valid_number()
 # accepts these (see srcs/parse_num.c), so they must still convert, not
@@ -217,11 +217,11 @@ assert_conv "101" "one hundred and one"
 assert_conv "100" "one hundred"
 assert_conv "123" "one hundred and twenty-three"
 assert_conv "1000" "one thousand"
-assert_conv "1001" "one thousand and one"
+assert_conv "1001" "one thousand, one"
 assert_conv "1101" "one thousand, one hundred and one"
 assert_conv "1234" "one thousand, two hundred and thirty-four"
 assert_conv "1000000" "one million"
-assert_conv "1000001" "one million and one"
+assert_conv "1000001" "one million, one"
 assert_conv "1234567" \
 	"one million, two hundred and thirty-four thousand, five hundred and sixty-seven"
 
@@ -253,6 +253,8 @@ assert_th "20" "ยี่สิบ"
 assert_th "99" "เก้าสิบ เก้า"
 assert_th "100" "หนึ่ง ร้อย"
 assert_th "1000" "หนึ่ง พัน"
+assert_th "10000" "หนึ่ง หมื่น"
+assert_th "10000" "หนึ่ง แสน"
 assert_th "1000000" "หนึ่ง ล้าน"
 
 # ============================================================
