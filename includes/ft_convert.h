@@ -13,18 +13,46 @@
 #ifndef FT_CONVERT_H
 # define FT_CONVERT_H
 
-# define CONV_BUF_SIZE	4096
+# include "ft_print.h"
+# include "ft_dict.h"
+# define HUNDREDTH_POS 2
+# define TENTH_POS 1
+# define ONES_POS 0
+# define DEFAULT_COMMA ","
+# define DEFAULT_AND "and"
+# define DEFAULT_HYPHEN "-"
 
-typedef struct	s_conv_ctx
+typedef struct	s_triplet
+{
+	int	hundredth;
+	int	tenth;
+	int	ones;
+}	t_triplet;
+
+struct	s_conv_ctx
 {
 	int		to_conv;
 	int		scale;
-}	t_conv_ctx;
+};
+typedef struct s_conv_ctx	t_conv_ctx;
 
-typedef struct s_conv_buf
-{
-	char	buf[CONV_BUF_SIZE];
-	int		size;
-}	t_conv_buf;
+void    assign_digit_to_key(char *key, int n);
+void	assign_unique_to_key(char *key, int tenth, int ones);
+char    *get_suffix(t_dict_list *dict, int scale_idx, int pos);
+int		convert_hundredth(
+			t_triplet	*triplet,
+			t_print_buf *buf,
+			int scale,
+			t_dict_list *dict
+			);
+int		convert_tenth_ones(
+			t_triplet *triplet,
+			t_print_buf *buf,
+			int scale,
+			t_dict_list *dict
+			);
+void	append_comma(t_dict_list *dict, t_print_buf *buf);
+void	append_and(t_dict_list *dict, t_print_buf *buf);
+void	append_hyphen(t_dict_list *dict, t_print_buf *buf);
 
 #endif

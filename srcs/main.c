@@ -1,12 +1,13 @@
 #include "ft_dict.h"
 #include "ft_read_line.h"
 #include "ft_string.h"
+#include "ft_print.h"
 #include "rush02.h"
 #include <stdlib.h>
 
 static int	print_error(char *msg)
 {
-	ft_putstr(msg);
+	ft_putstr(msg, STDERR);
 	return (1);
 }
 

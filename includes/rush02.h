@@ -9,9 +9,6 @@
 
 # include "ft_dict.h"
 
-void		print_word(char *word, int *is_first);
-void		ft_putstr(char *str);
-void		ft_putchar(char c);
 int			is_valid_number(char *str);
 char		*trim_leading_zeros(char *str);
 int			convert_number(char *str, t_dict_list *dict);

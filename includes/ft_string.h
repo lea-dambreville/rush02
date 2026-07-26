@@ -18,6 +18,7 @@ int		is_space(char c);
 int		ft_strlen(char *str);
 int		ft_strcmp(char *s1, char *s2);
 int		ft_strchr(char *str, char c);
+char	*ft_strpcpy(char *dest, char *src);
 char	*ft_strdup(char *str);
 char	*ft_strndup(char *str, int n);
 char	*ft_strnjoin(char *s1, char *s2, int n);

@@ -4,67 +4,47 @@
 #include "ft_string.h"
 #include <stdlib.h>
 
-static char	*get_magnitude_key(int scale_idx)
-{
-	char	*key;
-	int		zeros;
-	int		i;
-
-	zeros = scale_idx * 3;
-	key = (char *)malloc(sizeof(char) * (zeros + 2));
-	if (!key)
-		return (NULL);
-	key[0] = '1';
-	i = 1;
-	while (i <= zeros)
-	{
-		key[i] = '0';
-		i++;
-	}
-	key[i] = '\0';
-	return (key);
-}
-
 static int	convert_triplet(
-	int			num,
+	int num,
+	int scale,
 	t_dict_list	*dict,
-	t_conv_buf	*conv_buf
+	t_print_buf	*buf
 )
 {
-	int		ones;
-	int		tenth;
-	int		hundredth;
-	char	*word;
+	char		*word;
+	t_triplet	triplet;
 
 	if (num == 0)
 	{
-		word = dict_lookup(dict, '0');
+		word = dict_lookup(dict, "0");
 		if (!word)
 			return (0);
-		append_conv_buf(conv_buf, word);
+		ft_append_buf(buf, word, STDOUT);
+		return (1);
 	}
-	ones = num % 10;
-	tenth = (num % 100) / 10;
-	hundredth = num / 100;
-	if (hundredth > 0)
-	{
-
-	}
+	triplet.hundredth = num / 100;
+	triplet.tenth = (num % 100) / 10;
+	triplet.ones = num % 10;
+	if (!convert_hundredth(&triplet, buf, scale, dict))
+		return (0);
+	if (!convert_tenth_ones(&triplet, buf, scale, dict))
+		return (0);
+	return (1);
 }
 
 static int	process_group(
-	t_conv_ctx *ctx,
-	t_conv_buf *conv_buf,
+	t_conv_ctx	*ctx,
+	t_print_buf *buf,
 	t_dict_list *dict,
 	int is_first
 )
 {
 	if (ctx->to_conv == 0 && !is_first)
 		return (1);
-	append_comma(conv_buf, is_first, dict);
-	if (!convert_triplet(ctx->to_conv, dict, &conv_buf))
+	if (!is_first)
+		append_comma(dict, buf);
+	if (!convert_triplet(ctx->to_conv, ctx->scale, dict, buf))
 		return (0);
-	append_magnitude(conv_buf, ctx->scale);
 	return (1);
 }
 
@@ -73,21 +53,22 @@ int	convert_number(char *str, t_dict_list *dict)
 	int			len;
 	int			size;
 	t_conv_ctx	ctx;
-	t_conv_buf	conv_buf;
+	t_print_buf	buf;
 
 	len = ft_strlen(str);
+	buf.size = 0;
 	ctx.scale = (len - 1) / 3;
 	while (ctx.scale >= 0)
 	{
 		size = ft_min(3, len - (ctx.scale * 3));
 		ctx.to_conv = ft_antoi(str, size);
-		if (!process_group(&ctx, &conv_buf, dict, len - (ctx.scale * 3) <= 3))
+		if (!process_group(&ctx, &buf, dict, len - (ctx.scale * 3) <= 3))
 			return (0);
 		str = str + size;
 		ctx.scale--;
 	}
-	flush_conv_buf(conv_buf);
-	ft_putchar('\n');
+	ft_append_buf(&buf, "\n", STDOUT);
+	ft_flush(&buf, STDOUT);
 	return (1);
 }
 
