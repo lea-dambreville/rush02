@@ -6,12 +6,16 @@
 /*   By: sapoolpr <sapoolpr@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 00:20:04 by sapoolpr          #+#    #+#             */
-/*   Updated: 2026/07/26 03:42:21 by sapoolpr         ###   ########.fr       */
+/*   Updated: 2026/07/27 00:48:04 by sapoolpr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_STRING_H
 # define FT_STRING_H
+
+# define TRIM_FRONT 0
+# define TRIM_BACK 1
+# define TRIM_BOTH 2
 
 int		is_number(char c);
 int		is_space(char c);
@@ -24,6 +28,6 @@ char	*ft_strpcpy(char *dest, char *src);
 char	*ft_strdup(char *str);
 char	*ft_strndup(char *str, int n);
 char	*ft_strnjoin(char *s1, char *s2, int n);
-char	*trim_spaces(char *str, int start, int end);
+char	*trim_spaces(char *str, int start, int end, int mode);
 
 #endif

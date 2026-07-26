@@ -6,7 +6,7 @@
 /*   By: sapoolpr <sapoolpr@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 00:45:43 by sapoolpr          #+#    #+#             */
-/*   Updated: 2026/07/26 03:34:24 by sapoolpr         ###   ########.fr       */
+/*   Updated: 2026/07/27 00:49:44 by sapoolpr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,18 @@ char	*ft_strnjoin(char *s1, char *s2, int n)
 	return (ret);
 }
 
-char	*trim_spaces(char *str, int start, int end)
+char	*trim_spaces(char *str, int start, int end, int mode)
 {
-	while (start < end && is_space(str[start]))
-		start++;
-	while (end > start && is_space(str[end - 1]))
-		end--;
+	if (mode == TRIM_FRONT || mode == TRIM_BOTH)
+	{
+		while (start < end && is_space(str[start]))
+			start++;
+	}
+	if (mode == TRIM_BACK || mode == TRIM_BOTH)
+	{
+		while (end > start && is_space(str[end - 1]))
+			end--;
+	}
 	if (start >= end)
 		return (NULL);
 	return (ft_strndup(str + start, end - start));

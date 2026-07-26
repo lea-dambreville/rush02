@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_dict.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: sapoolpr <sapoolpr@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 17:09:05 by mran              #+#    #+#             */
-/*   Updated: 2026/07/26 20:35:33 by mran             ###   ########.fr       */
+/*   Updated: 2026/07/27 00:55:38 by sapoolpr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,18 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+
+static int	retrim_val(t_dict *entry)
+{
+	char	*tmp;
+
+	tmp = entry->val;
+	entry->val = trim_spaces(entry->val, 0, ft_strlen(entry->val), TRIM_BOTH);
+	free(tmp);
+	if (!entry->val)
+		return (0);
+	return (1);
+}
 
 static int	validate_entry(t_dict *entry, char *path)
 {
@@ -61,9 +73,10 @@ static t_dict	parse_line(char *line, char *path)
 	else
 	{
 		len = ft_strlen(line);
-		entry.key = trim_spaces(line, 0, colon_idx);
-		entry.val = trim_spaces(line, colon_idx + 1, len);
-		if (!entry.key || !entry.val || !validate_entry(&entry, path))
+		entry.key = trim_spaces(line, 0, colon_idx, TRIM_BACK);
+		entry.val = trim_spaces(line, colon_idx + 1, len, TRIM_FRONT);
+		if (!entry.key || !entry.val
+			|| !validate_entry(&entry, path) || !retrim_val(&entry))
 		{
 			free(entry.key);
 			free(entry.val);
@@ -95,7 +108,7 @@ static int	parse_dict_data(int fd, t_dict_list *dict, char *path)
 		entry = parse_line(line, path);
 		free(line);
 		if (entry.key == NULL || entry.val == NULL)
-			return (print_error(DICT_ERROR));
+			return (0);
 		if ((dict->size == dict->capacity) && !realloc_dict(dict))
 			return (0);
 		append_entry(dict, &entry);

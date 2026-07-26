@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: sapoolpr <sapoolpr@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 17:17:24 by mran              #+#    #+#             */
-/*   Updated: 2026/07/26 17:17:25 by mran             ###   ########.fr       */
+/*   Updated: 2026/07/27 00:50:37 by sapoolpr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static int	validate_and_conv(char *num_str, t_dict_list *dict)
 		print_error(ERROR);
 		return (0);
 	}
-	num_str = trim_spaces(num_str, 0, ft_strlen(num_str));
+	num_str = trim_spaces(num_str, 0, ft_strlen(num_str), TRIM_BOTH);
 	tmp = num_str;
 	num_str = trim_leading_zeros(num_str);
 	free(tmp);
