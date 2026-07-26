@@ -6,7 +6,7 @@
 /*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 17:09:05 by mran              #+#    #+#             */
-/*   Updated: 2026/07/26 17:09:17 by mran             ###   ########.fr       */
+/*   Updated: 2026/07/26 20:18:58 by mran             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,16 @@
 #include "ft_dict.h"
 #include "ft_string.h"
 #include "ft_read_line.h"
+#include "ft_print.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+
+static int	print_error(char *msg)
+{
+	ft_putstr(msg, STDERR);
+	return (1);
+}
 
 static t_dict	parse_line(char *line)
 {
@@ -65,7 +72,7 @@ static int	parse_dict_data(int fd, t_dict_list *dict)
 		entry = parse_line(line);
 		free(line);
 		if (entry.key == NULL || entry.val == NULL)
-			return (0);
+			return (print_error(DICT_ERROR));
 		if ((dict->size == dict->capacity) && !realloc_dict(dict))
 			return (0);
 		append_entry(dict, &entry);
