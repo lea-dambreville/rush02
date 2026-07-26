@@ -12,7 +12,7 @@
 . "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/lib.sh"
 
 MAIN="$MAINS_DIR/parse_dict_main.c"
-SRCS="$ROOT_DIR/srcs/parse_dict.c $ROOT_DIR/srcs/ft_dict.c $ROOT_DIR/srcs/ft_mem.c $ROOT_DIR/srcs/ft_read_line.c $ROOT_DIR/srcs/ft_string_1.c $ROOT_DIR/srcs/ft_string_2.c"
+SRCS="$ROOT_DIR/srcs/parse_dict.c $ROOT_DIR/srcs/ft_dict.c $ROOT_DIR/srcs/ft_mem.c $ROOT_DIR/srcs/ft_read_line.c $ROOT_DIR/srcs/ft_string_1.c $ROOT_DIR/srcs/ft_string_2.c $ROOT_DIR/srcs/ft_string_3.c"
 
 STRICT_FLAGS="-Wall -Wextra -Werror -I $ROOT_DIR/includes"
 
@@ -55,7 +55,7 @@ F_EMPTY_FILE="$_WORK_DIR/empty_file.dict"
 F_MANY="$_WORK_DIR/many.dict"
 i=0
 while [ "$i" -lt 100 ]; do
-	printf 'k%d: v%d\n' "$i" "$i" >>"$F_MANY"
+	printf '%d: v%d\n' "$i" "$i" >>"$F_MANY"
 	i=$((i + 1))
 done
 
@@ -146,12 +146,12 @@ fi
 
 # --- more entries than the initial fixed capacity (64): storage must grow,
 # not silently drop/overflow past the 65th entry ---
-_out=$(run_pd "$F_MANY" "k0" "k63" "k64" "k99")
+_out=$(run_pd "$F_MANY" "0" "63" "64" "99")
 assert_eq "many entries: size reflects all 100 lines" "SIZE 100" "$(printf '%s\n' "$_out" | sed -n '1p')"
-assert_eq "many entries: first entry" "KEY k0 -> v0" "$(printf '%s\n' "$_out" | sed -n '2p')"
-assert_eq "many entries: at the default-capacity boundary" "KEY k63 -> v63" "$(printf '%s\n' "$_out" | sed -n '3p')"
-assert_eq "many entries: just past the default-capacity boundary" "KEY k64 -> v64" "$(printf '%s\n' "$_out" | sed -n '4p')"
-assert_eq "many entries: last entry" "KEY k99 -> v99" "$(printf '%s\n' "$_out" | sed -n '5p')"
+assert_eq "many entries: first entry" "KEY 0 -> v0" "$(printf '%s\n' "$_out" | sed -n '2p')"
+assert_eq "many entries: at the default-capacity boundary" "KEY 63 -> v63" "$(printf '%s\n' "$_out" | sed -n '3p')"
+assert_eq "many entries: just past the default-capacity boundary" "KEY 64 -> v64" "$(printf '%s\n' "$_out" | sed -n '4p')"
+assert_eq "many entries: last entry" "KEY 99 -> v99" "$(printf '%s\n' "$_out" | sed -n '5p')"
 
 # --- dict_lookup edge cases per its own NULL guards ---
 _out=$(run_pd "$F_GOOD" "")

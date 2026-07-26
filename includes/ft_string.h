@@ -15,6 +15,8 @@
 
 int		is_number(char c);
 int		is_space(char c);
+int		is_numeric(char *str);
+int		is_printable(char *str);
 int		ft_strlen(char *str);
 int		ft_strcmp(char *s1, char *s2);
 int		ft_strchr(char *str, char c);

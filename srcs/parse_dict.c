@@ -13,19 +13,40 @@
 #include "rush02.h"
 #include "ft_dict.h"
 #include "ft_string.h"
+#include "ft_convert.h"
 #include "ft_read_line.h"
 #include "ft_print.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 
-static int	print_error(char *msg)
+static int	validate_entry(t_dict *entry, char *path)
 {
-	ft_putstr(msg, STDERR);
+	int	default_cmp;
+
+	default_cmp = ft_strcmp(path, DEFAULT_DICT);
+	if (!entry || entry->key == NULL || entry->val == NULL)
+		return (0);
+	if (default_cmp == 0)
+	{
+		if (!is_numeric(entry->key) || !is_printable(entry->val))
+			return (0);
+	}
+	else
+	{
+		if (ft_strcmp(entry->key, DEFAULT_COMMA) == 0)
+			return (1);
+		else if (ft_strcmp(entry->key, DEFAULT_AND) == 0)
+			return (1);
+		else if (ft_strcmp(entry->key, DEFAULT_HYPHEN) == 0)
+			return (1);
+		if (!is_numeric(entry->key))
+			return (0);
+	}
 	return (1);
 }
 
-static t_dict	parse_line(char *line)
+static t_dict	parse_line(char *line, char *path)
 {
 	t_dict	entry;
 	int		colon_idx;
@@ -42,16 +63,18 @@ static t_dict	parse_line(char *line)
 		len = ft_strlen(line);
 		entry.key = trim_spaces(line, 0, colon_idx);
 		entry.val = trim_spaces(line, colon_idx + 1, len);
-		if (!entry.key || !entry.val)
+		if (!entry.key || !entry.val || !validate_entry(&entry, path))
 		{
 			free(entry.key);
 			free(entry.val);
+			entry.key = NULL;
+			entry.val = NULL;
 		}
 	}
 	return (entry);
 }
 
-static int	parse_dict_data(int fd, t_dict_list *dict)
+static int	parse_dict_data(int fd, t_dict_list *dict, char *path)
 {
 	t_dict	entry;
 	char	*line;
@@ -69,7 +92,7 @@ static int	parse_dict_data(int fd, t_dict_list *dict)
 			free(line);
 			continue ;
 		}
-		entry = parse_line(line);
+		entry = parse_line(line, path);
 		free(line);
 		if (entry.key == NULL || entry.val == NULL)
 			return (print_error(DICT_ERROR));
@@ -96,7 +119,7 @@ t_dict_list	*parse_dictionary(char *path)
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
 		return (free_dict(dict));
-	if (!parse_dict_data(fd, dict))
+	if (!parse_dict_data(fd, dict, path))
 	{
 		close(fd);
 		return (free_dict(dict));

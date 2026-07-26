@@ -14,6 +14,7 @@ SRCS      = $(SRCS_DIR)convert_1.c \
             $(SRCS_DIR)ft_read_line.c \
             $(SRCS_DIR)ft_string_1.c \
             $(SRCS_DIR)ft_string_2.c \
+            $(SRCS_DIR)ft_string_3.c \
             $(SRCS_DIR)main.c \
             $(SRCS_DIR)parse_dict.c \
             $(SRCS_DIR)parse_num.c \
