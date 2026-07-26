@@ -23,10 +23,13 @@ BIN=$(link_main_multi "$OBJS" "$MAIN" "-I $ROOT_DIR/includes") || { report; exit
 F_GOOD="$_WORK_DIR/good.dict"
 printf '0: zero\n1: one\n2: two\n10: ten\n100: hundred\n' >"$F_GOOD"
 
-# Extra whitespace around key/value must be trimmed (trim_spaces), and
-# blank lines in between must simply be skipped, not treated as malformed.
+# Extra whitespace between the number and ':' and between ':' and the value
+# must be trimmed (trim_spaces), and blank lines in between must simply be
+# skipped, not treated as malformed. Per the subject's grammar
+# ([number][0-n spaces]:[0-n spaces][printable]) the line must start with
+# the number itself -- no leading spaces before it.
 F_WHITESPACE="$_WORK_DIR/whitespace.dict"
-printf '  0  :   zero  \n\n1:one\n\n  2:  two\n' >"$F_WHITESPACE"
+printf '0  :   zero  \n\n1:one\n\n2:  two\n' >"$F_WHITESPACE"
 
 # A line with no ':' at all is malformed -- per parse_line, colon_idx runs
 # to the terminating '\0' and the line is rejected.
