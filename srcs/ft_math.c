@@ -30,6 +30,7 @@ int	ft_antoi(char *str, int n)
 	{
 		ret = (ret * 10) - (*str - '0');
 		str++;
+		i++;
 	}
 	return (ret * -1);
 }

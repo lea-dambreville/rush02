@@ -8,6 +8,7 @@ void	append_comma(t_dict_list *dict, t_print_buf *buf)
 	if (!word)
 		word = DEFAULT_COMMA;
 	ft_append_buf(buf, word, STDOUT);
+	ft_append_buf(buf, " ", STDOUT);
 }
 
 void	append_and(t_dict_list *dict, t_print_buf *buf)
@@ -17,7 +18,9 @@ void	append_and(t_dict_list *dict, t_print_buf *buf)
 	word = dict_lookup(dict, "and");
 	if (!word)
 		word = DEFAULT_AND;
+	ft_append_buf(buf, " ", STDOUT);
 	ft_append_buf(buf, word, STDOUT);
+	ft_append_buf(buf, " ", STDOUT);
 }
 
 void	append_hyphen(t_dict_list *dict, t_print_buf *buf)

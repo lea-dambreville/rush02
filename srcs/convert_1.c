@@ -36,15 +36,26 @@ static int	process_group(
 	t_conv_ctx	*ctx,
 	t_print_buf *buf,
 	t_dict_list *dict,
-	int is_first
+	int *is_first
 )
 {
-	if (ctx->to_conv == 0 && !is_first)
+	char	*suffix;
+
+	if (ctx->to_conv == 0 && (!*is_first || ctx->scale !=0))
 		return (1);
-	if (!is_first)
+	if (!*is_first)
 		append_comma(dict, buf);
 	if (!convert_triplet(ctx->to_conv, ctx->scale, dict, buf))
 		return (0);
+	if (ctx->scale != 0)
+	{
+		suffix = get_suffix(dict, ctx->scale, ONES_POS);
+		if (!suffix)
+			return (0);
+		ft_append_buf(buf, " ", STDOUT);
+		ft_append_buf(buf, suffix, STDOUT);
+	}
+	*is_first = 0;
 	return (1);
 }
 
@@ -54,15 +65,17 @@ int	convert_number(char *str, t_dict_list *dict)
 	int			size;
 	t_conv_ctx	ctx;
 	t_print_buf	buf;
+	int			is_first;
 
 	len = ft_strlen(str);
 	buf.size = 0;
 	ctx.scale = (len - 1) / 3;
+	is_first = 1;
 	while (ctx.scale >= 0)
 	{
 		size = ft_min(3, len - (ctx.scale * 3));
 		ctx.to_conv = ft_antoi(str, size);
-		if (!process_group(&ctx, &buf, dict, len - (ctx.scale * 3) <= 3))
+		if (!process_group(&ctx, &buf, dict, &is_first))
 			return (0);
 		str = str + size;
 		ctx.scale--;

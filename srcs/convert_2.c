@@ -41,7 +41,6 @@ static int convert_ones(
 {
 	char	key[2];
 	char	*word;
-	char	*suffix;
 
 	if (triplet->ones == 0)
 		return (1);
@@ -49,12 +48,9 @@ static int convert_ones(
 	word = dict_lookup(dict, key);
 	if (!word)
 		return (0);
-	suffix = get_suffix(dict, scale, ONES_POS);
 	if (scale != 0 && !word)
 		return (0);
 	ft_append_buf(buf, word, STDOUT);
-	if (suffix && scale != 0)
-		ft_append_buf(buf, suffix, STDOUT);
 	return (1);
 }
 
@@ -76,8 +72,6 @@ static int	convert_unique(
 	if (scale != 0 && !suffix)
 		return (0);
 	ft_append_buf(buf, word, STDOUT);
-	if (suffix)
-		ft_append_buf(buf, suffix, STDOUT);
 	return (1);
 }
 
@@ -93,8 +87,6 @@ int	convert_tenth_ones(
 
 	if (triplet->tenth == 0 && triplet->ones == 0)
 		return (1);
-	if (triplet->hundredth > 0)
-		append_and(dict, buf);
 	if (triplet->tenth > 0)
 	{
 		is_unique = convert_unique(triplet, buf, scale, dict);
@@ -135,8 +127,11 @@ int	convert_hundredth(
 			return (0);
 	}
 	ft_append_buf(buf, word, STDOUT);
+	ft_append_buf(buf, " ", STDOUT);
 	ft_append_buf(buf, suffix, STDOUT);
 	if (triplet->tenth > 0 || triplet->ones > 0)
+	{
 		append_and(dict, buf);
+	}
 	return (1);
 }
