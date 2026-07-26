@@ -15,18 +15,16 @@ static int convert_tenth(
 	if (triplet->tenth == 0)
 		return (1);
 	assign_digit_to_key(key, triplet->tenth);
-	word = dict_lookup(dict, key);
+	suffix = get_suffix(dict, scale, TENTH_POS);
+	if (!suffix || scale == 0)
+		word = tenth_lookup(dict, triplet->tenth);
+	else
+		word = dict_lookup(dict, key);
 	if (!word)
 		return (0);
-	suffix = get_suffix(dict, scale, TENTH_POS);
-	if (!suffix)
-	{
-		suffix = get_suffix(dict, 0, TENTH_POS);
-		if (!suffix)
-			return (0);
-	}
 	ft_append_buf(buf, word, STDOUT);
-	ft_append_buf(buf, suffix, STDOUT);
+	if (suffix && scale != 0)
+		ft_append_buf(buf, suffix, STDOUT);
 	if (triplet->ones > 0)
 		append_hyphen(dict, buf);
 	return (1);

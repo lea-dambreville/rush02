@@ -14,6 +14,14 @@ void	assign_unique_to_key(char *key, int tenth, int ones)
     key[2] = '\0';
 }
 
+char	*tenth_lookup(t_dict_list *dict, int tenth)
+{
+	char	key[3];
+
+	assign_unique_to_key(key, tenth, 0);
+	return (dict_lookup(dict, key));
+}
+
 static char *get_magnitude_key(int scale_idx, int pos)
 {
 	char	*key;

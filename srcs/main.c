@@ -55,9 +55,11 @@ static int	validate_and_conv(char *num_str, t_dict_list *dict)
 	}
 	if (!(convert_number(num_str, dict)))
 	{
+		free(num_str);
 		print_error(DICT_ERROR);
 		return (0);
 	}
+	free(num_str);
 	return (1);
 }
 

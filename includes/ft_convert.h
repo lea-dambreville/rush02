@@ -38,6 +38,7 @@ typedef struct s_conv_ctx	t_conv_ctx;
 
 void    assign_digit_to_key(char *key, int n);
 void	assign_unique_to_key(char *key, int tenth, int ones);
+char	*tenth_lookup(t_dict_list *dict, int tenth);
 char    *get_suffix(t_dict_list *dict, int scale_idx, int pos);
 int		convert_hundredth(
 			t_triplet	*triplet,
