@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_num.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ldambrev <ldambrev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 17:17:35 by mran              #+#    #+#             */
-/*   Updated: 2026/07/26 17:17:36 by mran             ###   ########.fr       */
+/*   Updated: 2026/07/26 17:54:15 by ldambrev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	is_valid_number(char *str)
 	i = 0;
 	while (is_space(str[i]))
 		i++;
-	if (str[i] == '+')
+	while(str[i] == '+')
 		i++;
 	while (str[i])
 	{
@@ -40,8 +40,8 @@ char	*trim_leading_zeros(char *str)
 	i = 0;
 	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
 		i++;
-	if (str[i] == '+')
-		i++;
+	while(str[i] && str[i] == '+')
+			i++;
 	while (str[i] == '0' && str[i + 1] != '\0')
 		i++;
 	return (ft_strdup(str + i));
