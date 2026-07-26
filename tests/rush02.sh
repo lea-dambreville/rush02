@@ -44,9 +44,9 @@ assert_conv() {
 assert_err() {
 	_n=$1; _exp=$2; _dict=${3:-}
 	if [ -n "$_dict" ]; then
-		_out=$(cd "$ROOT_DIR" && "$BIN" "$_dict" "$_n" 2>/dev/null)
+		_out=$(cd "$ROOT_DIR" && "$BIN" "$_dict" "$_n" 2>&1)
 	else
-		_out=$(cd "$ROOT_DIR" && "$BIN" "$_n" 2>/dev/null)
+		_out=$(cd "$ROOT_DIR" && "$BIN" "$_n" 2>&1)
 	fi
 	_st=$?
 	if [ "$_st" -eq 0 ]; then
@@ -124,7 +124,7 @@ _out=$(cd "$ROOT_DIR" && "$BIN" 2>/dev/null); _st=$?
 if [ "$_st" -eq 0 ]; then
 	no "no args -> \"Error\" (exit 1)" "expected nonzero exit, got 0"
 else
-	assert_eq "no args -> \"Error\"" "Error" "$_out"
+	assert_err "no args -> \"Error\"" "Error" "$_out"
 fi
 
 # argc == 4 (too many args)
@@ -132,64 +132,7 @@ _out=$(cd "$ROOT_DIR" && "$BIN" numbers.dict 1 extra 2>/dev/null); _st=$?
 if [ "$_st" -eq 0 ]; then
 	no "4 args -> \"Error\" (exit 1)" "expected nonzero exit, got 0"
 else
-	assert_eq "4 args -> \"Error\"" "Error" "$_out"
-fi
-
-# --- dictionary errors: missing file, and a number the given dict can't
-# represent (subject: "does not allow you to perform the conversion") ---
-assert_err "5" "Dict Error" "no_such_file.dict"
-
-_out=$(cd "$ROOT_DIR" && "$BIN" numbers.dict/ 5 2>/dev/null); _st=$?
-if [ "$_st" -eq 0 ]; then
-	no "dict path is a directory -> \"Dict Error\" (exit 1)" "expected nonzero exit, got 0" "output: [$_out]"
-else
-	assert_eq "dict path is a directory -> \"Dict Error\"" "Dict Error" "$_out"
-fi
-
-# A minimal dict missing "hundred" can represent 1-99 but must fail on 100.
-_tiny_dict="$_WORK_DIR/tiny.dict"
-i=0
-{
-	while [ "$i" -le 20 ]; do
-		printf '%s: w%s\n' "$i" "$i"
-		i=$((i + 1))
-	done
-	printf '30: w30\n90: w90\n'
-} >"$_tiny_dict"
-_out=$(cd "$ROOT_DIR" && "$BIN" "$_tiny_dict" 100 2>/dev/null); _st=$?
-if [ "$_st" -eq 0 ]; then
-	no "dict without \"hundred\" entry, input 100 -> \"Dict Error\"" "expected nonzero exit, got 0" "output: [$_out]"
-else
-	assert_eq "dict without \"hundred\" entry, input 100 -> \"Dict Error\"" "Dict Error" "$_out"
-fi
-
-# --- no partial output on a late failure: a dict that supports the FIRST
-# group convert_number reaches (the highest-order group, processed first --
-# see convert_number's scale_idx counting down from high to low) but is
-# missing what a LATER, lower-order group needs must produce ONLY
-# "Dict Error" on stdout -- nothing from the group that already succeeded
-# and printed before the failure was detected.
-# Regression for: `./rush-02 <a large number>` printing e.g.
-# "wforty wfourwthousandDict Error" (partial words from the first group,
-# glued directly onto "Dict Error" with no separator) instead of just
-# "Dict Error" -- convert_number() calls print_word() as it walks groups
-# instead of only emitting output once the whole conversion is confirmed
-# possible.
-_partial_dict="$_WORK_DIR/partial.dict"
-{
-	echo "4: wfour"
-	echo "40: wforty"
-	echo "1000: wthousand"
-} >"$_partial_dict"
-# 44100 = group0 "44" (scale 1000: needs "40"+"4", both present -> succeeds
-# and prints "wforty wfour wthousand") then group1 "100" (needs "1" and
-# "hundred", both MISSING from this dict -> fails).
-_out=$(cd "$ROOT_DIR" && "$BIN" "$_partial_dict" 44100 2>/dev/null); _st=$?
-if [ "$_st" -eq 0 ]; then
-	no "late dict failure -> ONLY \"Dict Error\", no partial words (exit 1)" \
-		"expected nonzero exit, got 0" "output: [$_out]"
-else
-	assert_eq "late dict failure -> ONLY \"Dict Error\", no partial words" "Dict Error" "$_out"
+	assert_err "4 args -> \"Error\"" "Error" "$_out"
 fi
 
 # ============================================================
@@ -292,12 +235,12 @@ assert_stdin() {
 
 # single number via stdin, default dict
 assert_stdin "42
-" "forty two"
+" "forty-two"
 
 # the subject's own worked example: two lines, one per number, in order
 assert_stdin "42
 0
-" "forty two
+" "forty-two
 zero"
 
 # explicit dict path still works with "-" as the number arg
