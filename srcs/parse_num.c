@@ -20,7 +20,7 @@ int	is_valid_number(char *str)
 	i = 0;
 	while (is_space(str[i]))
 		i++;
-	while(str[i] == '+')
+	while (str[i] == '+')
 		i++;
 	while (str[i])
 	{
@@ -40,8 +40,8 @@ char	*trim_leading_zeros(char *str)
 	i = 0;
 	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
 		i++;
-	while(str[i] && str[i] == '+')
-			i++;
+	while (str[i] == '+')
+		i++;
 	while (str[i] == '0' && str[i + 1] != '\0')
 		i++;
 	return (ft_strdup(str + i));

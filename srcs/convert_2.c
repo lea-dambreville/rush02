@@ -32,7 +32,10 @@ static int	convert_tenth(t_triplet *triplet, t_print_buf *buf, int scale,
 		return (0);
 	ft_append_buf(buf, word, STDOUT);
 	if (suffix && scale != 0)
+	{
+		ft_append_buf(buf, " ", STDOUT);
 		ft_append_buf(buf, suffix, STDOUT);
+	}
 	if (triplet->ones > 0)
 		append_hyphen(dict, buf);
 	return (1);
@@ -61,14 +64,11 @@ static int	convert_unique(t_triplet *triplet, t_print_buf *buf, int scale,
 {
 	char	key[3];
 	char	*word;
-	char	*suffix;
 
+	(void) scale;
 	assign_unique_to_key(key, triplet->tenth, triplet->ones);
 	word = dict_lookup(dict, key);
 	if (!word)
-		return (0);
-	suffix = get_suffix(dict, scale, ONES_POS);
-	if (scale != 0 && !suffix)
 		return (0);
 	ft_append_buf(buf, word, STDOUT);
 	return (1);

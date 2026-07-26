@@ -22,24 +22,23 @@
 # define DEFAULT_AND "and"
 # define DEFAULT_HYPHEN "-"
 
-typedef struct	s_triplet
+typedef struct s_triplet
 {
 	int	hundredth;
 	int	tenth;
 	int	ones;
 }	t_triplet;
 
-struct	s_conv_ctx
+typedef struct s_conv_ctx
 {
 	int		to_conv;
 	int		scale;
-};
-typedef struct s_conv_ctx	t_conv_ctx;
+}	t_conv_ctx;
 
-void    assign_digit_to_key(char *key, int n);
+void	assign_digit_to_key(char *key, int n);
 void	assign_unique_to_key(char *key, int tenth, int ones);
 char	*tenth_lookup(t_dict_list *dict, int tenth);
-char    *get_suffix(t_dict_list *dict, int scale_idx, int pos);
+char	*get_suffix(t_dict_list *dict, int scale_idx, int pos);
 int		convert_hundredth(
 			t_triplet	*triplet,
 			t_print_buf *buf,
