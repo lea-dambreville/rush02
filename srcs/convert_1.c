@@ -32,6 +32,26 @@ static int	convert_triplet(
 	return (1);
 }
 
+static int	have_suffix(t_dict_list *dict, t_conv_ctx *ctx)
+{
+	int	hundredth;
+	int	tenth;
+	int	ones;
+
+	hundredth = ctx->to_conv / 100;
+	tenth = (ctx->to_conv % 100) / 10;
+	ones = ctx->to_conv % 10;
+	if (ctx->scale == 0)
+		return (0);
+	else if (ones > 0)
+		return (1);
+	else if (get_suffix(dict, ctx->scale, HUNDREDTH_POS) && hundredth != 0)
+		return (0);
+	else if (get_suffix(dict, ctx->scale, TENTH_POS) && tenth != 0)
+		return (0);
+	return (1);
+}
+
 static int	process_group(
 	t_conv_ctx	*ctx,
 	t_print_buf *buf,
@@ -47,7 +67,7 @@ static int	process_group(
 		append_comma(dict, buf);
 	if (!convert_triplet(ctx->to_conv, ctx->scale, dict, buf))
 		return (0);
-	if (ctx->scale != 0)
+	if (have_suffix(dict, ctx))
 	{
 		suffix = get_suffix(dict, ctx->scale, ONES_POS);
 		if (!suffix)

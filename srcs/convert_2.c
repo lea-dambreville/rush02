@@ -85,7 +85,7 @@ int	convert_tenth_ones(
 
 	if (triplet->tenth == 0 && triplet->ones == 0)
 		return (1);
-	if (triplet->tenth > 0)
+	if (triplet->tenth > 0 && triplet->ones != 0)
 	{
 		is_unique = convert_unique(triplet, buf, scale, dict);
 		if (triplet->tenth == 1 && !is_unique)
