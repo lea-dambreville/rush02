@@ -59,18 +59,19 @@ static void	run_stdin_convert(t_dict_list *dict)
 	{
 		line = ft_read_line(0, &is_success);
 		if (!line || !is_success)
+		{
+			free(line);
 			return ;
+		}
 		if (line[0] == '\0')
 		{
 			free(line);
 			continue ;
 		}
 		num_str = trim_spaces(line, 0, ft_strlen(line));
+		free(line);
 		if (!num_str)
-		{
-			free(line);
 			return ;
-		}
 		validate_and_conv(num_str, dict);
 		free(num_str);
 	}
@@ -78,9 +79,9 @@ static void	run_stdin_convert(t_dict_list *dict)
 
 int	main(int argc, char **argv)
 {
-	char 		*dict_path;
-	char 		*num_str;
-	t_dict_list *dict;
+	char		*dict_path;
+	char		*num_str;
+	t_dict_list	*dict;
 
 	if (!assign_args(argc, argv, &num_str, &dict_path))
 		return (print_error(ERROR));
