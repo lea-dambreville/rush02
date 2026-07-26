@@ -1,17 +1,29 @@
-#include <stdlib.h>
-#include "ft_convert.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   convert_3.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/26 17:16:01 by mran              #+#    #+#             */
+/*   Updated: 2026/07/26 17:16:59 by mran             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void    assign_digit_to_key(char *key, int n)
+#include "ft_convert.h"
+#include <stdlib.h>
+
+void	assign_digit_to_key(char *key, int n)
 {
-    key[0] = n + '0';
-    key[1] = '\0';
+	key[0] = n + '0';
+	key[1] = '\0';
 }
 
 void	assign_unique_to_key(char *key, int tenth, int ones)
 {
-    key[0] = tenth + '0';
-    key[1] = ones + '0';
-    key[2] = '\0';
+	key[0] = tenth + '0';
+	key[1] = ones + '0';
+	key[2] = '\0';
 }
 
 char	*tenth_lookup(t_dict_list *dict, int tenth)
@@ -22,7 +34,7 @@ char	*tenth_lookup(t_dict_list *dict, int tenth)
 	return (dict_lookup(dict, key));
 }
 
-static char *get_magnitude_key(int scale_idx, int pos)
+static char	*get_magnitude_key(int scale_idx, int pos)
 {
 	char	*key;
 	int		zeros;
@@ -43,15 +55,15 @@ static char *get_magnitude_key(int scale_idx, int pos)
 	return (key);
 }
 
-char    *get_suffix(t_dict_list *dict, int scale_idx, int pos)
+char	*get_suffix(t_dict_list *dict, int scale_idx, int pos)
 {
-    char    *key;
-    char    *suffix;
+	char	*key;
+	char	*suffix;
 
-    key = get_magnitude_key(scale_idx, pos);
-    if (!key)
-        return (NULL);
-    suffix = dict_lookup(dict, key);
-    free(key);
-    return (suffix);
+	key = get_magnitude_key(scale_idx, pos);
+	if (!key)
+		return (NULL);
+	suffix = dict_lookup(dict, key);
+	free(key);
+	return (suffix);
 }

@@ -1,12 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   convert_2.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/26 17:14:56 by mran              #+#    #+#             */
+/*   Updated: 2026/07/26 17:15:18 by mran             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_convert.h"
 #include <stdlib.h>
 
-static int convert_tenth(
-	t_triplet *triplet,
-	t_print_buf *buf,
-	int scale,
-	t_dict_list *dict
-	)
+static int	convert_tenth(t_triplet *triplet, t_print_buf *buf, int scale,
+		t_dict_list *dict)
 {
 	char	key[2];
 	char	*word;
@@ -30,12 +38,8 @@ static int convert_tenth(
 	return (1);
 }
 
-static int convert_ones(
-	t_triplet *triplet,
-	t_print_buf *buf,
-	int scale,
-	t_dict_list *dict
-	)
+static int	convert_ones(t_triplet *triplet, t_print_buf *buf, int scale,
+		t_dict_list *dict)
 {
 	char	key[2];
 	char	*word;
@@ -52,16 +56,13 @@ static int convert_ones(
 	return (1);
 }
 
-static int	convert_unique(
-	t_triplet *triplet,
-	t_print_buf *buf,
-	int scale,
-	t_dict_list *dict
-	)
+static int	convert_unique(t_triplet *triplet, t_print_buf *buf, int scale,
+		t_dict_list *dict)
 {
 	char	key[3];
 	char	*word;
 	char	*suffix;
+
 	assign_unique_to_key(key, triplet->tenth, triplet->ones);
 	word = dict_lookup(dict, key);
 	if (!word)
@@ -73,15 +74,10 @@ static int	convert_unique(
 	return (1);
 }
 
-
-int	convert_tenth_ones(
-	t_triplet *triplet,
-	t_print_buf *buf,
-	int scale,
-	t_dict_list *dict
-	)
+int	convert_tenth_ones(t_triplet *triplet, t_print_buf *buf, int scale,
+		t_dict_list *dict)
 {
-	int		is_unique;
+	int	is_unique;
 
 	if (triplet->tenth == 0 && triplet->ones == 0)
 		return (1);
@@ -93,19 +89,14 @@ int	convert_tenth_ones(
 		if (is_unique)
 			return (1);
 	}
-	if (!convert_tenth(triplet, buf, scale, dict)
-		|| !convert_ones(triplet, buf, scale, dict)
-		)
+	if (!convert_tenth(triplet, buf, scale, dict) || !convert_ones(triplet, buf,
+			scale, dict))
 		return (0);
 	return (1);
 }
 
-int	convert_hundredth(
-	t_triplet *triplet,
-	t_print_buf *buf,
-	int scale,
-	t_dict_list *dict
-	)
+int	convert_hundredth(t_triplet *triplet, t_print_buf *buf, int scale,
+		t_dict_list *dict)
 {
 	char	key[2];
 	char	*word;

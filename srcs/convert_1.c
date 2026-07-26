@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   convert_1.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mran <mran@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/26 17:08:04 by mran              #+#    #+#             */
+/*   Updated: 2026/07/26 17:08:07 by mran             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "rush02.h"
 #include "ft_math.h"
 #include "ft_convert.h"
@@ -61,7 +73,7 @@ static int	process_group(
 {
 	char	*suffix;
 
-	if (ctx->to_conv == 0 && (!*is_first || ctx->scale !=0))
+	if (ctx->to_conv == 0 && (!*is_first || ctx->scale != 0))
 		return (1);
 	if (!*is_first)
 		append_comma(dict, buf);
